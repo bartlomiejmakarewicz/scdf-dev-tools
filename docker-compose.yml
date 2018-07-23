@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    expose:
+      - 5672
+    ports:
+      - "15672:15672"
+      - 5672:5672
+  redis:
+    image: redis:2.8
+    expose:
+      - "6379"
+  mysql:
+    image: mariadb:10.2
+    environment:
+      MYSQL_DATABASE: dataflow
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: rootpw
+    expose:
+      - 3306
+  dataflow-server:
+    image: springcloud/spring-cloud-dataflow-server-local:1.5.2.RELEASE
+    container_name: dataflow-server
+    ports:
+      - "9393:9393"
+    environment:
+      - spring.cloud.dataflow.applicationProperties.stream.spring.rabbitmq.host=rabbitmq
+      - maven.localRepository=mylocal
+      - maven.remote-repositories.repo1.url=file:///home/root/.m2/repository
+      - spring_datasource_url=jdbc:mysql://mysql:3306/dataflow
+      - spring_datasource_username=root
+      - spring_datasource_password=rootpw
+      - spring_datasource_driver-class-name=org.mariadb.jdbc.Driver
+      - spring.cloud.dataflow.applicationProperties.stream.spring.redis.host=redis
+      - spring_redis_host=redis
+    depends_on:
+      - rabbitmq
+      - mysql
+      - redis
+    volumes:
+      - /home/bama/.m2/repository/:/home/root/.m2/repository/
+  app-import:
+    image: alpine:3.7
+    depends_on:
+      - dataflow-server
+    command: >
+      /bin/sh -c "
+        while ! nc -z dataflow-server 9393;
+        do
+          sleep 1;
+        done;
+        wget -qO- 'http://dataflow-server:9393/apps'  --post-data='uri=http://bit.ly/Darwin-GA-stream-applications-rabbit-maven&force=true';
+        echo 'Stream apps imported'
+        wget -qO- 'http://dataflow-server:9393/apps'  --post-data='uri=http://bit.ly/Clark-GA-task-applications-maven&force=true';
+        echo 'Task apps imported'"
+
