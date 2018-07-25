@@ -6,12 +6,12 @@ services:
     expose:
       - 5672
     ports:
-      - "15672:15672"
+      - 15672:15672
       - 5672:5672
   redis:
     image: redis:2.8
     expose:
-      - "6379"
+      - 6379
   mysql:
     image: mariadb:10.2
     environment:
