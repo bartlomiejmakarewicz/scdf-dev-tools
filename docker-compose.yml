@@ -27,8 +27,6 @@ services:
       - "9393:9393"
     environment:
       - spring.cloud.dataflow.applicationProperties.stream.spring.rabbitmq.host=rabbitmq
-      - maven.localRepository=mylocal
-      - maven.remote-repositories.repo1.url=file:///home/root/.m2/repository
       - spring_datasource_url=jdbc:mysql://mysql:3306/dataflow
       - spring_datasource_username=root
       - spring_datasource_password=rootpw
@@ -40,7 +38,7 @@ services:
       - mysql
       - redis
     volumes:
-      - /home/bama/.m2/repository/:/home/root/.m2/repository/
+      - /home/bama/.m2/repository/:/root/.m2/repository/
   app-import:
     image: alpine:3.7
     depends_on:
