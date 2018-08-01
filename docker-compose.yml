@@ -21,10 +21,10 @@ services:
     expose:
       - 3306
   dataflow-server:
-    image: springcloud/spring-cloud-dataflow-server-local:1.5.2.RELEASE
+    image: springcloud/spring-cloud-dataflow-server-local:1.6.0.RELEASE
     container_name: dataflow-server
     ports:
-      - "9393:9393"
+      - 9393:9393
     environment:
       - spring.cloud.dataflow.applicationProperties.stream.spring.rabbitmq.host=rabbitmq
       - spring_datasource_url=jdbc:mysql://mysql:3306/dataflow
@@ -49,8 +49,8 @@ services:
         do
           sleep 1;
         done;
-        wget -qO- 'http://dataflow-server:9393/apps'  --post-data='uri=http://bit.ly/Darwin-GA-stream-applications-rabbit-maven&force=true';
+        wget -qO- 'http://dataflow-server:9393/apps'  --post-data='uri=http://bit.ly/Darwin-SR1-stream-applications-rabbit-maven&force=true';
         echo 'Stream apps imported'
-        wget -qO- 'http://dataflow-server:9393/apps'  --post-data='uri=http://bit.ly/Clark-GA-task-applications-maven&force=true';
+        wget -qO- 'http://dataflow-server:9393/apps'  --post-data='uri=http://bit.ly/Dearborn-GA-task-applications-maven&force=true';
         echo 'Task apps imported'"
 
